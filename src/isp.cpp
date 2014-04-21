@@ -43,8 +43,9 @@
 // - The SPI functions herein were developed for the AVR910_ARD programmer 
 // - More information at http://code.google.com/p/mega-isp
 
-#include "WProgram.h"
-#include "pins_arduino.h"
+#include <WProgram.h>
+#include <pins_arduino.h>
+#include "isp.h"
 #define RESET     SS
 
 #define LED_HB    9
@@ -65,13 +66,8 @@
 #define CRC_EOP     0x20 //ok it is a space...
 
 void pulse(int pin, int times);
-int avrisp();
-void write_flash(int length);
-uint8_t write_flash_pages(int length);
-uint8_t write_eeprom(int length);
-uint8_t write_eeprom_chunk(int start, int length);
 
-void setup() {
+void isp_setup() {
   Serial.begin(19200);
   pinMode(LED_PMODE, OUTPUT);
   pulse(LED_PMODE, 2);
@@ -119,7 +115,7 @@ void heartbeat() {
 }
 
 
-void loop(void) {
+void isp_loop(void) {
   // is pmode active?
   if (pmode) digitalWrite(LED_PMODE, HIGH); 
   else digitalWrite(LED_PMODE, LOW);
@@ -258,7 +254,6 @@ void set_parameters() {
 }
 
 void start_pmode() {
-  spi_init();
   // following delays may not work on all targets...
   pinMode(RESET, OUTPUT);
   digitalWrite(RESET, HIGH);
@@ -269,6 +264,7 @@ void start_pmode() {
   delay(50);
   pinMode(MISO, INPUT);
   pinMode(MOSI, OUTPUT);
+  spi_init();
   spi_transaction(0xAC, 0x53, 0x00, 0x00);
   pmode = 1;
 }

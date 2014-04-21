@@ -1,10 +1,12 @@
-#include "WProgram.h"
+#include <WProgram.h>
+#include "isp.h"
 
 extern "C" int main(void)
 {
-    setup();
+    SPCR.setSCK(14);
+    isp_setup();
+
     while (true) {
-        loop();
-        yield();
+        isp_loop();
     }
 }
